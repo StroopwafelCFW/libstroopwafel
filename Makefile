@@ -23,13 +23,11 @@ VERSION	:=	$(VER_MAJOR).$(VER_MINOR).$(VER_PATCH)
 # DATA is a list of directories containing data files
 # INCLUDES is a list of directories containing header files
 #-------------------------------------------------------------------------------
-TARGET		:=	$(notdir $(CURDIR))
+TARGET		:=	stroopwafel
 BUILD		:=	build
-SOURCES		:=	source \
-				source/devoptab
+SOURCES		:=	source
 DATA		:=	data
-INCLUDES	:=	source \
-				include \
+INCLUDES	:=	include
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -100,19 +98,19 @@ export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 .PHONY: all dist-bin dist-src dist install clean
 
 #---------------------------------------------------------------------------------
-all: lib/libmocha.a
+all: lib/libstroopwafel.a
 
 dist-bin: all
-	@tar --exclude=*~ -cjf libmocha-$(VERSION).tar.bz2 include lib
+	@tar --exclude=*~ -cjf libstroopwafel-$(VERSION).tar.bz2 include lib
 
 dist-src:
-	@tar --exclude=*~ -cjf libmocha-src-$(VERSION).tar.bz2 include source Makefile
+	@tar --exclude=*~ -cjf libstroopwafel-src-$(VERSION).tar.bz2 include source Makefile
 
 dist: dist-src dist-bin
 
 install: dist-bin
 	mkdir -p $(DESTDIR)$(DEVKITPRO)/wut/usr
-	bzip2 -cd libmocha-$(VERSION).tar.bz2 | tar -xf - -C $(DESTDIR)$(DEVKITPRO)/wut/usr
+	bzip2 -cd libstroopwafel-$(VERSION).tar.bz2 | tar -xf - -C $(DESTDIR)$(DEVKITPRO)/wut/usr
 
 lib:
 	@[ -d $@ ] || mkdir -p $@
@@ -120,7 +118,7 @@ lib:
 release:
 	@[ -d $@ ] || mkdir -p $@
 
-lib/libmocha.a :$(SOURCES) $(INCLUDES) | lib release
+lib/libstroopwafel.a :$(SOURCES) $(INCLUDES) | lib release
 	@$(MAKE) BUILD=release OUTPUT=$(CURDIR)/$@ \
 	BUILD_CFLAGS="-DNDEBUG=1 -O2 -s" \
 	DEPSDIR=$(CURDIR)/release \

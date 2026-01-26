@@ -10,7 +10,7 @@
 })
 
 #define LOG_APP_TYPE "L"
-#define LOG_APP_NAME "libmocha"
+#define LOG_APP_NAME "libstroopwafel"
 
 #define LOG_EX(FILENAME, FUNCTION, LINE, LOG_FUNC, LOG_LEVEL, LINE_END, FMT, ARGS...)                                                        \
     do {                                                                                                                                     \
