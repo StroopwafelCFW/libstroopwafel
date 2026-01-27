@@ -60,6 +60,37 @@ StroopwafelStatus Stroopwafel_GetAPIVersion(uint32_t *outVersion);
  */
 StroopwafelStatus Stroopwafel_SetFwPath(const char* path);
 
+typedef struct StroopwafelWrite {
+    uint32_t dest_addr;
+    const void *src;
+    uint32_t length;
+} StroopwafelWrite;
+
+/**
+ * Writes data to the IOS memory.
+ * @param num_writes The number of writes to perform.
+ * @param writes Pointer to an array of StroopwafelWrite structures.
+ * @return STROOPWAFEL_RESULT_SUCCESS: The memory has been written successfully.
+ *         STROOPWAFEL_RESULT_INVALID_ARGUMENT: Invalid arguments or too many writes.
+ *         STROOPWAFEL_RESULT_LIB_UNINITIALIZED: Library was not initialized.
+ *         STROOPWAFEL_RESULT_UNKNOWN_ERROR: Unknown error.
+ */
+StroopwafelStatus Stroopwafel_WriteMemory(uint32_t num_writes, const StroopwafelWrite *writes);
+
+/**
+ * Executes code at a target address in IOS.
+ * @param target_addr The address to execute.
+ * @param config Optional configuration buffer to pass as the first argument.
+ * @param config_len Length of the configuration buffer.
+ * @param output Optional output buffer to pass as the second argument.
+ * @param output_len Length of the output buffer.
+ * @return STROOPWAFEL_RESULT_SUCCESS: Execution completed.
+ *         STROOPWAFEL_RESULT_INVALID_ARGUMENT: Invalid target address.
+ *         STROOPWAFEL_RESULT_LIB_UNINITIALIZED: Library was not initialized.
+ *         STROOPWAFEL_RESULT_UNKNOWN_ERROR: Unknown error.
+ */
+StroopwafelStatus Stroopwafel_Execute(uint32_t target_addr, const void *config, uint32_t config_len, void *output, uint32_t output_len);
+
 
 #ifdef __cplusplus
 } // extern "C"

@@ -29,6 +29,19 @@ namespace {
         }
         return STROOPWAFEL_RESULT_SUCCESS;
     }
+
+    StroopwafelStatus doStroopwafelIPCV(const uint32_t command, uint32_t num_in, uint32_t num_io, IOSVec *vector) {
+        if (!stroopwafelInitDone || stroopwafelHandle < 0) {
+            return STROOPWAFEL_RESULT_LIB_UNINITIALIZED;
+        }
+
+        int res = IOS_Ioctlv(stroopwafelHandle, command, num_in, num_io, vector);
+        if (res < 0) {
+            DEBUG_FUNCTION_LINE_ERR("IOS_Ioctlv failed with res: %d", res);
+            return STROOPWAFEL_RESULT_UNKNOWN_ERROR;
+        }
+        return STROOPWAFEL_RESULT_SUCCESS;
+    }
 } // namespace
 
 const char *Stroopwafel_GetStatusStr(StroopwafelStatus status) {
@@ -143,4 +156,51 @@ StroopwafelStatus Stroopwafel_SetFwPath(const char* path) {
     aligned_path[sizeof(aligned_path) - 1] = '\0';
 
     return doStroopwafelIPC(STROOPWAFEL_IOCTL_SET_FW_PATH, aligned_path, strlen(aligned_path) + 1, nullptr, 0, nullptr);
+}
+
+StroopwafelStatus Stroopwafel_WriteMemory(uint32_t num_writes, const StroopwafelWrite *writes) {
+    if (num_writes == 0 || num_writes > 15 || !writes) {
+        return STROOPWAFEL_RESULT_INVALID_ARGUMENT;
+    }
+
+    ALIGN_0x40 uint32_t dest_addrs[16];
+    IOSVec vectors[16];
+
+    for (uint32_t i = 0; i < num_writes; i++) {
+        dest_addrs[i] = writes[i].dest_addr;
+        vectors[i + 1].ptr = (void *)writes[i].src;
+        vectors[i + 1].len = writes[i].length;
+    }
+
+    vectors[0].ptr = dest_addrs;
+    vectors[0].len = num_writes * sizeof(uint32_t);
+
+    return doStroopwafelIPCV(STROOPWAFEL_IOCTLV_WRITE_MEMORY, 1 + num_writes, 0, vectors);
+}
+
+StroopwafelStatus Stroopwafel_Execute(uint32_t target_addr, const void *config, uint32_t config_len, void *output, uint32_t output_len) {
+    if (!target_addr) {
+        return STROOPWAFEL_RESULT_INVALID_ARGUMENT;
+    }
+
+    ALIGN_0x40 uint32_t target = target_addr;
+    IOSVec vectors[3];
+    vectors[0].ptr = &target;
+    vectors[0].len = sizeof(uint32_t);
+
+    uint32_t num_in = 1;
+    if (config && config_len > 0) {
+        vectors[num_in].ptr = (void *)config;
+        vectors[num_in].len = config_len;
+        num_in++;
+    }
+
+    uint32_t num_io = 0;
+    if (output && output_len > 0) {
+        vectors[num_in].ptr = output;
+        vectors[num_in].len = output_len;
+        num_io = 1;
+    }
+
+    return doStroopwafelIPCV(STROOPWAFEL_IOCTLV_EXECUTE, num_in, num_io, vectors);
 }
