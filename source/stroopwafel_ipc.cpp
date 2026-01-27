@@ -168,11 +168,11 @@ StroopwafelStatus Stroopwafel_WriteMemory(uint32_t num_writes, const Stroopwafel
 
     for (uint32_t i = 0; i < num_writes; i++) {
         dest_addrs[i] = writes[i].dest_addr;
-        vectors[i + 1].ptr = (void *)writes[i].src;
+        vectors[i + 1].vaddr = (void *)writes[i].src;
         vectors[i + 1].len = writes[i].length;
     }
 
-    vectors[0].ptr = dest_addrs;
+    vectors[0].vaddr = dest_addrs;
     vectors[0].len = num_writes * sizeof(uint32_t);
 
     return doStroopwafelIPCV(STROOPWAFEL_IOCTLV_WRITE_MEMORY, 1 + num_writes, 0, vectors);
@@ -185,19 +185,19 @@ StroopwafelStatus Stroopwafel_Execute(uint32_t target_addr, const void *config, 
 
     ALIGN_0x40 uint32_t target = target_addr;
     IOSVec vectors[3];
-    vectors[0].ptr = &target;
+    vectors[0].vaddr = &target;
     vectors[0].len = sizeof(uint32_t);
 
     uint32_t num_in = 1;
     if (config && config_len > 0) {
-        vectors[num_in].ptr = (void *)config;
+        vectors[num_in].vaddr = (void *)config;
         vectors[num_in].len = config_len;
         num_in++;
     }
 
     uint32_t num_io = 0;
     if (output && output_len > 0) {
-        vectors[num_in].ptr = output;
+        vectors[num_in].vaddr = output;
         vectors[num_in].len = output_len;
         num_io = 1;
     }
