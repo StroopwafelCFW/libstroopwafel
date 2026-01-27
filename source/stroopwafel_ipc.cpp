@@ -87,7 +87,7 @@ StroopwafelStatus Stroopwafel_InitLibrary() {
         return status;
     }
 
-    if (version != STROOPWAFEL_API_VERSION) {
+    if (version > STROOPWAFEL_API_VERSION || version>>24 != STROOPWAFEL_API_VERSION>>24) {
         IOS_Close(stroopwafelHandle);
         stroopwafelHandle = -1;
         DEBUG_FUNCTION_LINE_ERR("Unsupported API Version: 0x%08X, expected 0x%08X", version, STROOPWAFEL_API_VERSION);
