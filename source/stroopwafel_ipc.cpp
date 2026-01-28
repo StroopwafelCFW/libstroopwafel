@@ -204,3 +204,15 @@ StroopwafelStatus Stroopwafel_Execute(uint32_t target_addr, const void *config, 
 
     return doStroopwafelIPCV(STROOPWAFEL_IOCTLV_EXECUTE, num_in, num_io, vectors);
 }
+
+StroopwafelStatus Stroopwafel_MapMemory(const StroopwafelMapMemory *info) {
+    if (!info) {
+        return STROOPWAFEL_RESULT_INVALID_ARGUMENT;
+    }
+
+    // Ensure 0x40 aligned buffer for IOS IPC
+    ALIGN_0x40 StroopwafelMapMemory aligned_info;
+    memcpy(&aligned_info, info, sizeof(StroopwafelMapMemory));
+
+    return doStroopwafelIPC(STROOPWAFEL_IOCTL_MAP_MEMORY, &aligned_info, sizeof(StroopwafelMapMemory), nullptr, 0, nullptr);
+}

@@ -91,6 +91,25 @@ StroopwafelStatus Stroopwafel_WriteMemory(uint32_t num_writes, const Stroopwafel
  */
 StroopwafelStatus Stroopwafel_Execute(uint32_t target_addr, const void *config, uint32_t config_len, void *output, uint32_t output_len);
 
+typedef struct StroopwafelMapMemory {
+    uint32_t paddr;
+    uint32_t vaddr;
+    uint32_t size;
+    uint32_t domain;
+    uint32_t type;
+    uint32_t cached;
+} StroopwafelMapMemory;
+
+/**
+ * Maps memory pages in IOS.
+ * @param info Pointer to a StroopwafelMapMemory structure.
+ * @return STROOPWAFEL_RESULT_SUCCESS: Memory mapped successfully.
+ *         STROOPWAFEL_RESULT_INVALID_ARGUMENT: Invalid info pointer.
+ *         STROOPWAFEL_RESULT_LIB_UNINITIALIZED: Library was not initialized.
+ *         STROOPWAFEL_RESULT_UNKNOWN_ERROR: Unknown error.
+ */
+StroopwafelStatus Stroopwafel_MapMemory(const StroopwafelMapMemory *info);
+
 
 #ifdef __cplusplus
 } // extern "C"

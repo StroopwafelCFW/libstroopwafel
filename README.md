@@ -17,3 +17,4 @@ Available functions:
 - `Stroopwafel_DeInitLibrary()`: Deinitializes the library.
 - `Stroopwafel_GetAPIVersion(uint32_t *outVersion)`: Retrieves the API version of the running stroopwafel.
 - `Stroopwafel_SetFwPath(const char* path)`: Sets the firmware image path.
+- `Stroopwafel_MapMemory(const StroopwafelMapMemory *info)`: Maps memory pages in IOS.
