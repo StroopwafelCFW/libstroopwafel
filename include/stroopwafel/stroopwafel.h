@@ -1,8 +1,8 @@
 #pragma once
 #include "commands.h"
-#include <stdint.h>
 #include <coreinit/filesystem.h>
 #include <coreinit/filesystem_fsa.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,7 +58,7 @@ StroopwafelStatus Stroopwafel_GetAPIVersion(uint32_t *outVersion);
  *         STROOPWAFEL_RESULT_LIB_UNINITIALIZED: Library was not initialized. Call Stroopwafel_InitLibrary() before using this function.
  *         STROOPWAFEL_RESULT_UNKNOWN_ERROR: Unknown error.
  */
-StroopwafelStatus Stroopwafel_SetFwPath(const char* path);
+StroopwafelStatus Stroopwafel_SetFwPath(const char *path);
 
 typedef struct StroopwafelWrite {
     uint32_t dest_addr;
