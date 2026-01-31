@@ -7,7 +7,7 @@
 #include <malloc.h>
 #include <stdint.h>
 
-int stroopwafelHandle = -1;
+int stroopwafelHandle   = -1;
 int stroopwafelInitDone = 0;
 
 namespace {
@@ -19,7 +19,7 @@ namespace {
             return STROOPWAFEL_RESULT_LIB_UNINITIALIZED;
         }
 
-        int res = IOS_Ioctl(stroopwafelHandle, command, (void*)buffer_in, length_in, buffer_io, length_io);
+        int res = IOS_Ioctl(stroopwafelHandle, command, (void *) buffer_in, length_in, buffer_io, length_io);
         if (res < 0) {
             DEBUG_FUNCTION_LINE_ERR("IOS_Ioctl failed with res: %d", res);
             return STROOPWAFEL_RESULT_UNKNOWN_ERROR;
@@ -90,9 +90,9 @@ StroopwafelStatus Stroopwafel_InitLibrary() {
     }
 
     stroopwafelInitDone = 1;
-    
+
     // Check API version for compatibility
-    uint32_t version = 0;
+    uint32_t version         = 0;
     StroopwafelStatus status = Stroopwafel_GetAPIVersion(&version);
     if (status != STROOPWAFEL_RESULT_SUCCESS) {
         IOS_Close(stroopwafelHandle);
@@ -100,7 +100,7 @@ StroopwafelStatus Stroopwafel_InitLibrary() {
         return status;
     }
 
-    if (version > STROOPWAFEL_API_VERSION || version>>24 != STROOPWAFEL_API_VERSION>>24) {
+    if (version > STROOPWAFEL_API_VERSION || version >> 24 != STROOPWAFEL_API_VERSION >> 24) {
         IOS_Close(stroopwafelHandle);
         stroopwafelHandle = -1;
         DEBUG_FUNCTION_LINE_ERR("Unsupported API Version: 0x%08X, expected 0x%08X", version, STROOPWAFEL_API_VERSION);
@@ -126,9 +126,9 @@ StroopwafelStatus Stroopwafel_GetAPIVersion(uint32_t *version) {
     if (!version) {
         return STROOPWAFEL_RESULT_INVALID_ARGUMENT;
     }
-    
+
     ALIGN_0x40 uint32_t io_buffer[0x4]; // Buffer for output, ensure 0x40 aligned
-    int actual_len = 0;
+    int actual_len           = 0;
     StroopwafelStatus status = doStroopwafelIPC(STROOPWAFEL_IOCTL_GET_API_VERSION, nullptr, 0, io_buffer, sizeof(uint32_t), &actual_len);
 
     if (status == STROOPWAFEL_RESULT_SUCCESS && actual_len == sizeof(uint32_t)) {
@@ -139,7 +139,7 @@ StroopwafelStatus Stroopwafel_GetAPIVersion(uint32_t *version) {
     return status;
 }
 
-StroopwafelStatus Stroopwafel_SetFwPath(const char* path) {
+StroopwafelStatus Stroopwafel_SetFwPath(const char *path) {
     if (!path) {
         return STROOPWAFEL_RESULT_INVALID_ARGUMENT;
     }
@@ -167,13 +167,13 @@ StroopwafelStatus Stroopwafel_WriteMemory(uint32_t num_writes, const Stroopwafel
     IOSVec vectors[16];
 
     for (uint32_t i = 0; i < num_writes; i++) {
-        dest_addrs[i] = writes[i].dest_addr;
-        vectors[i + 1].vaddr = (void *)writes[i].src;
-        vectors[i + 1].len = writes[i].length;
+        dest_addrs[i]        = writes[i].dest_addr;
+        vectors[i + 1].vaddr = (void *) writes[i].src;
+        vectors[i + 1].len   = writes[i].length;
     }
 
     vectors[0].vaddr = dest_addrs;
-    vectors[0].len = num_writes * sizeof(uint32_t);
+    vectors[0].len   = num_writes * sizeof(uint32_t);
 
     return doStroopwafelIPCV(STROOPWAFEL_IOCTLV_WRITE_MEMORY, 1 + num_writes, 0, vectors);
 }
@@ -186,20 +186,20 @@ StroopwafelStatus Stroopwafel_Execute(uint32_t target_addr, const void *config, 
     ALIGN_0x40 uint32_t target = target_addr;
     IOSVec vectors[3];
     vectors[0].vaddr = &target;
-    vectors[0].len = sizeof(uint32_t);
+    vectors[0].len   = sizeof(uint32_t);
 
     uint32_t num_in = 1;
     if (config && config_len > 0) {
-        vectors[num_in].vaddr = (void *)config;
-        vectors[num_in].len = config_len;
+        vectors[num_in].vaddr = (void *) config;
+        vectors[num_in].len   = config_len;
         num_in++;
     }
 
     uint32_t num_io = 0;
     if (output && output_len > 0) {
         vectors[num_in].vaddr = output;
-        vectors[num_in].len = output_len;
-        num_io = 1;
+        vectors[num_in].len   = output_len;
+        num_io                = 1;
     }
 
     return doStroopwafelIPCV(STROOPWAFEL_IOCTLV_EXECUTE, num_in, num_io, vectors);
