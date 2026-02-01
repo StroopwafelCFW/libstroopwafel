@@ -216,3 +216,45 @@ StroopwafelStatus Stroopwafel_MapMemory(const StroopwafelMapMemory *info) {
 
     return doStroopwafelIPC(STROOPWAFEL_IOCTL_MAP_MEMORY, &aligned_info, sizeof(StroopwafelMapMemory), nullptr, 0, nullptr);
 }
+
+StroopwafelStatus Stroopwafel_GetMinutePath(StroopwafelMinutePath *out) {
+    if (!out) {
+        return STROOPWAFEL_RESULT_INVALID_ARGUMENT;
+    }
+
+    ALIGN_0x40 StroopwafelMinutePath aligned_out;
+    int actual_len           = 0;
+    StroopwafelStatus status = doStroopwafelIPC(STROOPWAFEL_IOCTL_GET_MINUTE_PATH, nullptr, 0, &aligned_out, sizeof(StroopwafelMinutePath), &actual_len);
+
+    if (status != STROOPWAFEL_RESULT_SUCCESS) {
+        return status;
+    }
+
+    if (actual_len != sizeof(StroopwafelMinutePath)) {
+        return STROOPWAFEL_RESULT_UNKNOWN_ERROR;
+    }
+
+    memcpy(out, &aligned_out, sizeof(StroopwafelMinutePath));
+    return STROOPWAFEL_RESULT_SUCCESS;
+}
+
+StroopwafelStatus Stroopwafel_GetPluginPath(StroopwafelMinutePath *out) {
+    if (!out) {
+        return STROOPWAFEL_RESULT_INVALID_ARGUMENT;
+    }
+
+    ALIGN_0x40 StroopwafelMinutePath aligned_out;
+    int actual_len           = 0;
+    StroopwafelStatus status = doStroopwafelIPC(STROOPWAFEL_IOCTL_GET_PLUGIN_PATH, nullptr, 0, &aligned_out, sizeof(StroopwafelMinutePath), &actual_len);
+
+    if (status != STROOPWAFEL_RESULT_SUCCESS) {
+        return status;
+    }
+
+    if (actual_len != sizeof(StroopwafelMinutePath)) {
+        return STROOPWAFEL_RESULT_UNKNOWN_ERROR;
+    }
+
+    memcpy(out, &aligned_out, sizeof(StroopwafelMinutePath));
+    return STROOPWAFEL_RESULT_SUCCESS;
+}
