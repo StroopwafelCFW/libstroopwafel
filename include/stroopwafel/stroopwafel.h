@@ -110,6 +110,37 @@ typedef struct StroopwafelMapMemory {
  */
 StroopwafelStatus Stroopwafel_MapMemory(const StroopwafelMapMemory *info);
 
+typedef enum StroopwafelMinuteDevice {
+    STROOPWAFEL_MIN_DEV_UNKNOWN = 0,
+    STROOPWAFEL_MIN_DEV_SLC     = 1,
+    STROOPWAFEL_MIN_DEV_SD      = 2,
+} StroopwafelMinuteDevice;
+
+typedef struct StroopwafelMinutePath {
+    uint32_t device;
+    char path[256];
+} StroopwafelMinutePath;
+
+/**
+ * Retrieves the path to the minute binary.
+ * @param out Pointer to a StroopwafelMinutePath structure where the path will be stored.
+ * @return STROOPWAFEL_RESULT_SUCCESS: Path retrieved successfully.
+ *         STROOPWAFEL_RESULT_INVALID_ARGUMENT: Invalid out pointer.
+ *         STROOPWAFEL_RESULT_LIB_UNINITIALIZED: Library was not initialized.
+ *         STROOPWAFEL_RESULT_UNKNOWN_ERROR: Unknown error.
+ */
+StroopwafelStatus Stroopwafel_GetMinutePath(StroopwafelMinutePath *out);
+
+/**
+ * Retrieves the path to the plugins directory.
+ * @param out Pointer to a StroopwafelMinutePath structure where the path will be stored.
+ * @return STROOPWAFEL_RESULT_SUCCESS: Path retrieved successfully.
+ *         STROOPWAFEL_RESULT_INVALID_ARGUMENT: Invalid out pointer.
+ *         STROOPWAFEL_RESULT_LIB_UNINITIALIZED: Library was not initialized.
+ *         STROOPWAFEL_RESULT_UNKNOWN_ERROR: Unknown error.
+ */
+StroopwafelStatus Stroopwafel_GetPluginPath(StroopwafelMinutePath *out);
+
 
 #ifdef __cplusplus
 } // extern "C"
